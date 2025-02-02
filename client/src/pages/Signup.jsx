@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import styles from "./Signup.module.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { handleError } from "../component/utils";
 import { toast, ToastContainer } from "react-toastify";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
 
-const Signup = () => {
+const Signup = ({ handleShowRegisterForm }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +43,6 @@ const Signup = () => {
   };
 
   const register = async () => {
-    // console.log(loginInfo);
     if (!validateInputs()) {
       return;
     }
@@ -68,67 +68,85 @@ const Signup = () => {
   };
 
   return (
-    <div className={styles.SignupContainer}>
-      <div className={styles.Signup}>
-        <h2>Register</h2>
-        <div className={styles.name}>
-          <label htmlFor="name">
-            Name <span>*</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            placeholder="Enter your name here"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className={styles.email}>
-          <label htmlFor="email">
-            Email <span>*</span>
-          </label>
-          <input
-            type="text"
-            id="email"
-            placeholder="Enter your email here"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="password">
-            Password <span>*</span>
-          </label>
-          <div className={styles.passwordInput}>
-            <input
-              type={show ? "text" : "password"}
-              id="password"
-              placeholder="Enter your password here"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {show ? (
-              <button onClick={handleShow}>
-                  <FaEye />
-              </button>
-            ) : (
+    <div className={styles.overlay} onClick={handleShowRegisterForm}>
+      <div
+        className={styles.signupWrapper}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.signupBox}>
+          <h2>Register a user</h2>
+          <div className={styles.inputField}>
+            <label htmlFor="name">
+              Name <span>*</span>
+            </label>
+            <div className={styles.nameInput}>
+              <span>
+                <FaUser />
+              </span>
+              <input
+                type="text"
+                id="name"
+                placeholder="Enter name here"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className={styles.inputField}>
+            <label htmlFor="email">
+              Email <span>*</span>
+            </label>
+            <div className={styles.emailInput}>
+              <span>
+                <FaUser />
+              </span>
+              <input
+                type="text"
+                id="email"
+                placeholder="Enter email here"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="password">
+              Password <span>*</span>
+            </label>
+            <div className={styles.passwordInput}>
+              <span>
+                <FaLock />
+              </span>
+              <input
+                type={show ? "text" : "password"}
+                id="password"
+                placeholder="Enter password here"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {show ? (
                 <button onClick={handleShow}>
-                    <FaEyeSlash />
-              </button>
-            )}
+                  <FaEye />
+                </button>
+              ) : (
+                <button onClick={handleShow}>
+                  <FaEyeSlash />
+                </button>
+              )}
+            </div>
+          </div>
+          <div className={styles.buttonContainer}>
+            <button onClick={register} disabled={loading}>
+              {loading ? "Registering..." : "Register"}
+            </button>
+            {error && <p className={styles.errorMessage}>{error}</p>}
           </div>
         </div>
-        <div className={styles.register}>
-          <button onClick={register} disabled={loading}>
-            {loading ? "Registering..." : "Register"}
-          </button>
-          {error && <p className={styles.error}>{error}</p>}
-          <span>
-            Already have an account? <Link to={"/login"}>Login</Link>
-          </span>
-        </div>
+        <ToastContainer />
+      <button className={styles.close} onClick={handleShowRegisterForm}>
+        <ImCross />
+      </button>
       </div>
-      <ToastContainer />
     </div>
   );
 };

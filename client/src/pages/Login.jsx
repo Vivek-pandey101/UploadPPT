@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import styles from "./Signup.module.css";
+import styles from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { handleError } from "../component/utils";
 import { ToastContainer } from "react-toastify";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -36,15 +36,18 @@ const Signup = () => {
         const result = await response.json();
         // console.log(result); // Log the result to see if `isAdmin` is true
         const { email, name, isAdmin } = result;
-        localStorage.setItem("userCred", JSON.stringify({ email, name, isAdmin }));
+        localStorage.setItem(
+          "userCred",
+          JSON.stringify({ email, name, isAdmin })
+        );
         if (isAdmin) {
           console.log("Navigating to admin page...");
           navigate("/admin-page");
-          return
-        }else if (!isAdmin) {
+          return;
+        } else if (!isAdmin) {
           console.log("Navigating to home page...");
           navigate("/");
-          return
+          return;
         }
       } else {
         handleError("Email or password is wrong");
@@ -55,16 +58,20 @@ const Signup = () => {
       return;
     }
   };
-  
 
   return (
     <div className={styles.SignupContainer}>
+      <div className={styles.content}>
+        <h2>This is not just a E Learning Platform</h2>
+      </div>
       <div className={styles.Signup}>
         <h2>Login</h2>
         <div className={styles.email}>
           <label htmlFor="email">
             Email <span>*</span>
           </label>
+          <div className={styles.emailInput}>
+            <span><FaUser/></span>
           <input
             type="text"
             id="email"
@@ -72,12 +79,14 @@ const Signup = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          </div>
         </div>
-        <div>
+        <div className={styles.password}>
           <label htmlFor="password">
             Password <span>*</span>
           </label>
           <div className={styles.passwordInput}>
+            <span><FaLock/></span>
             <input
               type={show ? "text" : "password"}
               id="password"
@@ -100,9 +109,6 @@ const Signup = () => {
           <Link>Lost your password? </Link>
 
           <button onClick={handleLogin}>Login</button>
-          <span>
-            Don't have an account? <Link to={"/signup"}>Signup</Link>
-          </span>
         </div>
       </div>
       <ToastContainer />

@@ -5,7 +5,6 @@ import { fetchImages } from "./redux/action";
 import AdminPage from "./pages/AdminPage";
 import ShowImagesById from "./pages/ShowImagesById";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -22,7 +21,6 @@ const App = () => {
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
         <Route path="/admin-page" element={
             <ProtectedRoute isAdmin={userDetails.isAdmin}>
               <AdminPage />

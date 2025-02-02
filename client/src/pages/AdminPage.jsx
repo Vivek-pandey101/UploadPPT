@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadImages, fetchImages } from "../redux/action";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import styles from "./AdminPage.module.css";
 import GalleryPage from "./GalleryPage";
 import Loader from "../component/Loader";
+import Signup from "./Signup";
 
 const AdminPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Hook for navigation
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
+
+  const handleShowRegisterForm = () => {
+    setShowRegisterForm(!showRegisterForm);
+  };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [name, setName] = useState("");
@@ -16,11 +22,11 @@ const AdminPage = () => {
   const { imageArr, isLoading } = useSelector((state) => state.images);
   const userDetails = JSON.parse(localStorage.getItem("userCred")) || {};
 
-    useEffect(()=>{
-      if(!userDetails){
-        navigate("login")
-      }
-    },[])
+  useEffect(() => {
+    if (!userDetails) {
+      navigate("login");
+    }
+  }, []);
 
   const onNameChange = (e) => {
     setName(e.target.value); // Update the name field
@@ -106,34 +112,38 @@ const AdminPage = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Admin Page</h1>
-        <button className={styles.logoutButton} onClick={handleLogout}>
-          Logout
-        </button>
+    <>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1>Admin Page</h1>
+          <div className={styles.logoutButton}>
+            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleShowRegisterForm}>Register a user</button>
+          </div>
+        </div>
+        <form method="post" onSubmit={handleSubmit} className={styles.form}>
+          <input
+            type="text"
+            placeholder="Enter file name"
+            value={name}
+            onChange={onNameChange}
+            className={styles.input}
+          />
+          <input
+            type="file"
+            onChange={onImageChange}
+            accept="image/*"
+            multiple
+            className={styles.input}
+          />
+          <button type="submit" className={styles.button} disabled={isLoading}>
+            {isLoading ? <div className={styles.spinner}></div> : "Upload"}
+          </button>
+        </form>
+        <GalleryPage images={imageArr} />
       </div>
-      <form method="post" onSubmit={handleSubmit} className={styles.form}>
-        <input
-          type="text"
-          placeholder="Enter file name"
-          value={name}
-          onChange={onNameChange}
-          className={styles.input}
-        />
-        <input
-          type="file"
-          onChange={onImageChange}
-          accept="image/*"
-          multiple
-          className={styles.input}
-        />
-        <button type="submit" className={styles.button} disabled={isLoading}>
-          {isLoading ? <div className={styles.spinner}></div> : "Upload"}
-        </button>
-      </form>
-      <GalleryPage images={imageArr} />
-    </div>
+      {showRegisterForm && <Signup handleShowRegisterForm={handleShowRegisterForm} />}
+    </>
   );
 };
 
