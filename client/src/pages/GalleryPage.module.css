@@ -1,0 +1,68 @@
+.galleryTableWrapper {
+    width: 100%;
+    margin: 40px auto;
+}
+
+.galleryTable {
+    width: 80%;
+    border-collapse: collapse;
+    text-align: left;
+    margin: 0 auto;
+}
+
+.galleryTable th,
+.galleryTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.galleryTable th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.galleryRow:hover {
+    background-color: #f9f9f9;
+}
+
+.actionsCell {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.seeImagesButton {
+    color: #007bff;
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.seeImagesButton:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.assignTodayButton,
+.assignTomorrowButton {
+    padding: 5px 10px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.assignTodayButton:hover,
+.assignTomorrowButton:hover {
+    background-color: #218838;
+}
+
+@media (max-width: 770px) {
+    .actionsCell{
+        flex-direction: column;
+        gap: 10px;
+    }
+}

@@ -1,0 +1,80 @@
+.ErrorPageContainer{
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ErrorPage{
+    text-align: center;
+}
+
+.error{
+    font-size: 6rem;
+    font-weight: 400;
+    letter-spacing: 8px;
+    color: rgb(68, 214, 166);
+    display: inline;
+}
+
+.errorContent{
+    color: rgb(68, 214, 166);
+    font-size: 5rem;
+    margin-top: -20px;
+}
+
+.sorryContent{
+    color: rgb(94, 2, 74);
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.backButton{
+    width: fit-content;
+    margin: 0 auto;
+    background: rgb(32, 32, 228);
+    color: white;
+    border-radius: 6px;
+}
+
+.backButton:hover{
+    background: rgb(46, 46, 209);
+}
+
+.backButton a{
+    padding: 10px 15px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .error{
+        font-size: 5rem;
+    }
+    .errorContent{
+        font-size: 4rem;
+    }
+}
+
+@media (max-width: 425px) {
+    .error{
+        font-size: 4rem;
+    }
+    .errorContent{
+        font-size: 3rem;
+    }
+    .sorryContent{
+        padding: 20px;
+        margin-top: -20px;
+    }
+}
+
+@media (max-width: 375px) {
+    .error{
+        font-size: 4rem;
+    }
+    .errorContent{
+        font-size: 2rem;
+        margin-top: 15px;
+    }
+}

@@ -1,0 +1,128 @@
+.TeachersListContainer {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.ContainerTwo {
+    width: 80%;
+    max-width: 600px;
+    background: #6169d8;
+    z-index: 1001;
+    padding: 40px 5px;
+    border-radius: 30px;
+    position: relative;
+    height: 550px;
+    min-height: 300px;
+}
+
+.CrossBtn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 1002;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 1.2rem;
+    transition: 300ms;
+}
+
+.CrossBtn:hover {
+    color: #ff0000;
+}
+
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.userTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+.userTable th {
+    text-align: center;
+}
+
+.tableHeader {
+    background-color: #6169d8;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+.tableRow {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+    background-color: #f8f9fa;
+}
+
+.tableData {
+    padding: 1rem;
+    color: #212529;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #6169d8;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tableHeader {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .tableData {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .checkbox {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tableContainer {
+        border-radius: 4px;
+    }
+
+    .tableHeader {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .tableData {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .ContainerTwo {
+        width: 95%;
+    }
+}
