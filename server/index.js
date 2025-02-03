@@ -6,7 +6,6 @@ const MongoStore = require("connect-mongo");
 const userRouter = require("./routes/userRouter");
 const session = require("express-session");
 const { json } = require("body-parser");
-const path = require("path")
 
 const app = express();
 
@@ -30,13 +29,6 @@ app.use(cors({
   origin: 'http://localhost:5173', // The URL of your frontend
   credentials: true, // Allow cookies to be sent with the request
 }));
-
-if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.resolve(__dirname, "./client", "dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./client", "dist", "index.html"));
-  });
-}
 
 app.use(express.json());
 
