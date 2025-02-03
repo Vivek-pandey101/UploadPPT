@@ -57,15 +57,16 @@ export const fetchImagesById = createAsyncThunk(
   }
 );
 
-export const updateBoolean = ({ id, urlLink, isChecked }) => async (dispatch) => {
+export const updateBoolean = ({ id, urlLink, isCheckedForEmail }) => async (dispatch) => {
   try {
     const response = await fetch(`http://localhost:3000/${id}/updateBoolean`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id, urlLink, isChecked }),
+      body: JSON.stringify({ id, urlLink, isCheckedForEmail }),
     });
+
     const data = await response.json();
 
     if (data.success) {
@@ -75,6 +76,7 @@ export const updateBoolean = ({ id, urlLink, isChecked }) => async (dispatch) =>
     console.error("Error updating boolean value:", error);
   }
 };
+
 
 const initialState = {
   imageArr: [],

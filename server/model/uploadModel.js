@@ -4,7 +4,7 @@ const fileSchema = new mongoose.Schema(
   {
     name: String, // Store the name of the upload
     url: [
-      { link: { type: String }, isChecked: { type: Boolean, default: false } },
+      { link: { type: String }, isChecked: [{ type: String }] },
     ], // Store the URLs of uploaded files
     enabledUser: [{ type: String }],
   },

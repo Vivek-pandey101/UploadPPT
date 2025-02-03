@@ -18,20 +18,21 @@ const App = () => {
   }, [dispatch]);
 
   return (
-    <>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin-page" element={
-            <ProtectedRoute isAdmin={userDetails.isAdmin}>
-              <AdminPage />
-            </ProtectedRoute>
-          } />
-        <Route path="/" element={<Navigate to={"/home"} />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/images/:byId" element={<ShowImagesById />} />
-        <Route path="*" element={<ErrorPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/admin-page"
+        element={
+          <ProtectedRoute isAdmin={userDetails?.isAdmin}>
+            <AdminPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* {!userDetails.isAdmin ? <Home /> : <AdminPage />} */}
+      <Route path="/" element={<Home />} />
+      <Route path="/images/:byId" element={<ShowImagesById />} />
+      <Route path="*" element={<ErrorPage />} />
+    </Routes>
   );
 };
 

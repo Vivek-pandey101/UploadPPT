@@ -50,7 +50,7 @@ const uploadToAws = (req, res) => {
 
     const urls = req.files.map((file) => ({
       link: file.location,
-      isChecked: false, // Default boolean value
+      is
     }));
     const name = req.body.name; // Get the name field from the frontend
 
@@ -134,9 +134,7 @@ const fetchImageById = async (req, res) => {
 };
 
 const updateBoolean = async (req, res) => {
-  const { id, urlLink, isChecked } = req.body;
-
-  // console.log("Received Data:", id, urlLink, isChecked);
+  const { id, urlLink, isCheckedForEmail } = req.body;
 
   try {
     const fileDoc = await File.findById(id);
@@ -151,16 +149,30 @@ const updateBoolean = async (req, res) => {
       return res.status(404).json({ message: "URL not found in the document" });
     }
 
-    fileDoc.url[urlIndex].isChecked = isChecked;
+    // Initialize isChecked array if it doesn't exist
+    if (!Array.isArray(fileDoc.url[urlIndex].isChecked)) {
+      fileDoc.url[urlIndex].isChecked = [];
+    }
+
+    // console.log("isCheckedForEmail : ", isCheckedForEmail);
+
+    if (!fileDoc.url[urlIndex].isChecked.includes(isCheckedForEmail)) {
+      fileDoc.url[urlIndex].isChecked.push(isCheckedForEmail);
+    }else{
+      fileDoc.url[urlIndex].isChecked.pop(isCheckedForEmail);
+    }
+
     fileDoc.markModified("url");
     await fileDoc.save();
 
     res.status(200).json({ success: true, document: fileDoc });
+    // console.log(fileDoc);
   } catch (err) {
     console.error("Error updating boolean value:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
 
 // Example route in your backend (e.g., in Express)
 const addEnabledUsers = async (req, res) => {

@@ -22,6 +22,7 @@ const Home = () => {
 
   const handleShowSlides = (id) => {
     dispatch(fetchImagesById(id));
+    localStorage.setItem("id", id)
   };
 
   const handleLogout = async () => {

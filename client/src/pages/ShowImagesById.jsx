@@ -3,46 +3,70 @@ import { useSelector, useDispatch } from "react-redux";
 import styles from "./ShowImagesById.module.css";
 import { fetchImagesById, updateBoolean } from "../redux/action";
 import Loader from "../component/Loader";
+import { BsFullscreen, BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import { MdFullscreenExit } from "react-icons/md";
 
 const ShowImagesById = () => {
   const { imageArrById, isLoading, imageArr } = useSelector(
     (state) => state.images
   );
   const { url = [], name } = imageArrById;
-
-  const fetchId = localStorage.getItem("id");
+  const [showFullScreen, setShowFullScreen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [show, setShow] = useState(false);
 
   const dispatch = useDispatch();
+  const fetchId = localStorage.getItem("id");
+  const userEmail = JSON.parse(localStorage.getItem("userCred"));
 
   // Ensure `url` is always an array
   const urlArray = Array.isArray(url) ? url : url ? [url] : [];
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const imagesPerPage = 1; // Set to show 1 image per page
-
-  // Calculate the indexes for the current page
-  const indexOfLastImage = currentPage * imagesPerPage;
-  const indexOfFirstImage = indexOfLastImage - imagesPerPage;
-  const currentImages = urlArray.slice(indexOfFirstImage, indexOfLastImage);
 
   useEffect(() => {
     if (fetchId) {
       dispatch(fetchImagesById(fetchId));
     }
-  }, [fetchId]);
+  }, [fetchId, dispatch]);
 
-  const handleToUpdate = (urlLink, isChecked) => {
-    // Find the matching _id from imageArr
-    const imageIds = imageArr.map(image => image._id);
-    // console.log(imageIds);
-
+  const handleToUpdate = (urlLink, email) => {
+    const imageIds = imageArr.map((image) => image._id);
     if (!imageIds) {
       console.error("No matching _id found for this URL:", urlLink);
       return;
     }
     dispatch(
-      updateBoolean({ id: imageIds, urlLink, isChecked: !isChecked })
+      updateBoolean({ id: imageIds, urlLink, isCheckedForEmail: email })
     );
+
+    setTimeout(() => {
+      dispatch(fetchImagesById(fetchId));
+      setShow(false);
+    }, 500);
+  };
+
+  const toggleFullScreen = () => {
+    const imgElement = document.getElementById("present");
+    if (!document.fullscreenElement) {
+      imgElement.requestFullscreen();
+      setShowFullScreen(true);
+      setShow(true);
+    } else {
+      document.exitFullscreen();
+      setShowFullScreen(false);
+      setShow(false);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < urlArray.length) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
   };
 
   if (isLoading) {
@@ -53,28 +77,70 @@ const ShowImagesById = () => {
     <div className={styles.ShowImagesByIdContainer}>
       <h2>{name}</h2>
       <div className={styles.ImagesWrapper}>
-        {currentImages.map((image, index) => (
-          <div key={index} className={styles.ImageCont}>
-            <img src={image.link} alt={`Image ${index}`} />
+        <div id="present" className={styles.ImageCont}>
+          {urlArray.length > 0 && (
+            <img
+              src={urlArray[currentPage - 1].link}
+              alt={`Image ${currentPage}`}
+            />
+          )}
+          {!show && (
             <input
               type="checkbox"
-              checked={image.isChecked}
+              checked={urlArray[currentPage - 1]?.isChecked?.includes(
+                userEmail.email
+              )}
               onChange={() =>
-                handleToUpdate(image.link, image.isChecked)
+                handleToUpdate(urlArray[currentPage - 1].link, userEmail.email)
               }
             />
-          </div>
-        ))}
+          )}
+          <button className={styles.fullScreenBtn} onClick={toggleFullScreen}>
+            {show ? <MdFullscreenExit /> : <BsFullscreen />}
+          </button>
+          {showFullScreen ? (
+            <div className={styles.fullScreenNav}>
+              <button onClick={handlePrev} disabled={currentPage === 1}>
+                <BsChevronLeft />
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={currentPage === urlArray.length}
+              >
+                <BsChevronRight />
+              </button>
+            </div>
+          ) : null}
+        </div>
+
         <div className={styles.imageButtons}>
           {urlArray.map((_, index) => (
             <div key={index}>
-              <button key={index} onClick={() => setCurrentPage(index + 1)}>
+              <button
+                className={currentPage === index + 1 ? styles.activeBtn : ""}
+                onClick={() => setCurrentPage(index + 1)}
+              >
                 {index + 1}
               </button>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Fullscreen Navigation */}
+      {showFullScreen && (
+        <div className={styles.fullScreenNav}>
+          <button onClick={handlePrev} disabled={currentPage === 1}>
+            <BsChevronLeft />
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === urlArray.length}
+          >
+            <BsChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

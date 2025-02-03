@@ -1,120 +1,119 @@
-.SignupContainer {
+/* Signup Container */
+.signupContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 100vh;
-    min-width: 100vw;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    gap: 30px;
-}
-
-.content {
-    font-size: 2rem;
-    font-weight: 700;
-    color: red;
-}
-
-.Signup {
-    margin: auto 0;
-    background-image: url("../../public/loginSignupBg.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 0 0, 10px 10px;
-    padding: 20px;
-    border-radius: 10px;
-    width: 500px;
-    min-width: 280px;
-}
-
-.Signup h2 {
-    font-size: 3rem;
-}
-
-.Signup span {
-    color: red;
-}
-
-.register button {
-    width: fit-content;
-    margin: 15px auto;
-    padding: 8px 20px;
-    font-size: 1rem;
-    font-weight: 700;
-    border-radius: 4px;
-    border: none;
-    background: #2b31ad55;
-}
-
-.register a {
-    margin: 10px 0;
-}
-
-.Signup label {
-    color: red;
-    margin: 0 auto;
-    padding-top: 15px;
-}
-
-input {
-    font-size: 1rem;
-    padding: 6px 15px;
-    border: none;
-    outline: none;
+  }
+  
+  /* Signup Box */
+  .signupBox {
+    background: #fff;
+    padding: 2rem;
     width: 100%;
-    background: none;
-}
-
-.passwordInput,
-.emailInput {
+    max-width: 380px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  /* Heading */
+  .heading {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* Subtext */
+  .subtext {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  /* Input Group */
+  .inputGroup {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .inputGroup label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .inputGroup label span {
+    color: red;
+  }
+  
+  /* Input Field */
+  .inputField {
     display: flex;
     align-items: center;
-    width: 90%;
-    margin-bottom: 15px;
-    background: white;
-    padding: 0 15px;
-    margin: 0 auto;
-    border-radius: 6px;
-}
-
-.password,
-.email {
-    margin-top: 15px;
-}
-
-.passwordInput button {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #f9f9f9;
+  }
+  
+  .inputField input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    padding: 5px;
+    color: #333;
+  }
+  
+  .inputIcon {
+    color: #777;
+    margin-right: 8px;
+  }
+  
+  /* Show Password Button */
+  .showPasswordBtn {
     border: none;
     background: none;
-}
-
-.SignupContainer svg {
-    font-size: 1.2rem;
-}
-
-.register {
-    display: flex;
-    flex-direction: column;
-}
-
-@media (max-width: 968px) {
-    .Signup h2 {
-        font-size: 2rem;
-    }
-
-    .SignupContainer {
-        flex-direction: column;
-    }
-
-    .Signup {
-        width: 70%;
-    }
-
-    .content {
-        font-size: 1.5rem;
-        padding: 20px 30px;
-    }
-}
-
-@media (max-width: 468px) {
-    .Signup {
-        width: 90%;
-    }
-}
+    cursor: pointer;
+    color: #777;
+    font-size: 16px;
+  }
+  
+  /* Forgot Password */
+  /* .forgotPassword {
+    text-align: right;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
+  .forgotPassword a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .forgotPassword a:hover {
+    text-decoration: underline;
+  } */
+  
+  /* Login Button */
+  .loginBtn {
+    width: 100%;
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+  
+  .loginBtn:hover {
+    background: #0056b3;
+  }
+  

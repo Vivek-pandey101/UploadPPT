@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import styles from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { handleError } from "../component/utils";
 import { ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa";
+import styles from "./Login.module.css"; // Import CSS module
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -12,9 +12,7 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  const handleShow = () => {
-    setShow(!show);
-  };
+  const handleShow = () => setShow(!show);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,91 +25,64 @@ const Signup = () => {
       const response = await fetch(url, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
       if (response.ok) {
         const result = await response.json();
-        // console.log(result); // Log the result to see if `isAdmin` is true
         const { email, name, isAdmin } = result;
-        localStorage.setItem(
-          "userCred",
-          JSON.stringify({ email, name, isAdmin })
-        );
-        if (isAdmin) {
-          console.log("Navigating to admin page...");
-          navigate("/admin-page");
-          return;
-        } else if (!isAdmin) {
-          console.log("Navigating to home page...");
-          navigate("/");
-          return;
-        }
+        localStorage.setItem("userCred", JSON.stringify({ email, name, isAdmin }));
+        navigate(isAdmin ? "/admin-page" : "/");
       } else {
         handleError("Email or password is wrong");
-        return;
       }
     } catch (error) {
       handleError(error.message);
-      return;
     }
   };
 
   return (
-    <div className={styles.SignupContainer}>
-      <div className={styles.content}>
-        <h2>This is not just a E Learning Platform</h2>
-      </div>
-      <div className={styles.Signup}>
-        <h2>Login</h2>
-        <div className={styles.email}>
-          <label htmlFor="email">
-            Email <span>*</span>
-          </label>
-          <div className={styles.emailInput}>
-            <span><FaUser/></span>
-          <input
-            type="text"
-            id="email"
-            placeholder="Enter your email here"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <div className={styles.signupContainer}>
+      <div className={styles.signupBox}>
+        <h2 className={styles.heading}>Login</h2>
+        <p className={styles.subtext}>A platform for diversified learning and inspiration</p>
+
+        <div className={styles.inputGroup}>
+          <label>Email <span>*</span></label>
+          <div className={styles.inputField}>
+            <FaUser className={styles.inputIcon} />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
         </div>
-        <div className={styles.password}>
-          <label htmlFor="password">
-            Password <span>*</span>
-          </label>
-          <div className={styles.passwordInput}>
-            <span><FaLock/></span>
+
+        <div className={styles.inputGroup}>
+          <label>Password <span>*</span></label>
+          <div className={styles.inputField}>
+            <FaLock className={styles.inputIcon} />
             <input
               type={show ? "text" : "password"}
-              id="password"
-              placeholder="Enter your password here"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {show ? (
-              <button onClick={handleShow}>
-                <FaEye />
-              </button>
-            ) : (
-              <button onClick={handleShow}>
-                <FaEyeSlash />
-              </button>
-            )}
+            <button className={styles.showPasswordBtn} onClick={handleShow}>
+              {show ? <FaEye /> : <FaEyeSlash />}
+            </button>
           </div>
         </div>
-        <div className={styles.register}>
-          <Link>Lost your password? </Link>
+        {/* <div className={styles.forgotPassword}>
+          <Link to="/forgot-password">Lost your password?</Link>
+        </div> */}
+        <button className={styles.loginBtn} onClick={handleLogin}>Login</button>
 
-          <button onClick={handleLogin}>Login</button>
-        </div>
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </div>
   );
 };
