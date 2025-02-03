@@ -28,7 +28,7 @@ const Home = () => {
   const handleLogout = async () => {
     try {
       // Call the backend logout endpoint
-      const response = await fetch("http://localhost:3000/register/logout", {
+      const response = await fetch("https://uploadppt.onrender.com/register/logout", {
         method: "POST",
         credentials: "include", // Include cookies for session-based logout
       });

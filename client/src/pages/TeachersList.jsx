@@ -9,7 +9,7 @@ const TeachersList = ({ setShow, show, selectedFileId, selectedFileIdTwo }) => {
     const getUserList = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/register/getAllUsers"
+          "https://uploadppt.onrender.com/register/getAllUsers"
         );
         const { images } = await response.json();
         setUsers(images);
@@ -23,7 +23,7 @@ const TeachersList = ({ setShow, show, selectedFileId, selectedFileIdTwo }) => {
   const handleCheckboxChange = async (email, isChecked) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/files/${
+        `https://uploadppt.onrender.com/files/${
           selectedFileId || selectedFileIdTwo
         }/enableUser`,
         {

@@ -7,7 +7,7 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/register/signup",
+        "https://uploadppt.onrender.com/register/signup",
         userData,
         {
           headers: {
