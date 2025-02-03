@@ -34,7 +34,9 @@ app.use(cors({
 app.use(express.json());
 
 app.use("/", s3Router);
-
+app.get("/test",(req, res)=>{
+  res.send("server is running succesfully")
+})
 app.use("/register", userRouter)
 
 mongoose
