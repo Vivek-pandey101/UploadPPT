@@ -21,7 +21,7 @@ const Signup = () => {
       return;
     }
     try {
-      const url = "https://uploadppt.onrender.com/register/login";
+      const url = "http://localhost:3000/register/login";
       const response = await fetch(url, {
         method: "POST",
         credentials: "include",
@@ -32,7 +32,10 @@ const Signup = () => {
       if (response.ok) {
         const result = await response.json();
         const { email, name, isAdmin } = result;
-        localStorage.setItem("userCred", JSON.stringify({ email, name, isAdmin }));
+        localStorage.setItem(
+          "userCred",
+          JSON.stringify({ email, name, isAdmin })
+        );
         navigate(isAdmin ? "/admin-page" : "/");
       } else {
         handleError("Email or password is wrong");
@@ -44,12 +47,26 @@ const Signup = () => {
 
   return (
     <div className={styles.signupContainer}>
+      <div className={styles.aboutGyankosha}>
+        <p>
+          <strong>Gyankosha</strong> – Transforming education with NEP-aligned excellence in
+          academics, skills, and growth.
+        </p>
+        <p>
+          Empowering students with 21st-century skills, mental agility, and
+          holistic learning for a brighter future.
+        </p>
+      </div>
       <div className={styles.signupBox}>
         <h2 className={styles.heading}>Login</h2>
-        <p className={styles.subtext}>A platform for diversified learning and inspiration</p>
+        <p className={styles.subtext}>
+          A platform for diversified learning and inspiration
+        </p>
 
         <div className={styles.inputGroup}>
-          <label>Email <span>*</span></label>
+          <label>
+            Email <span>*</span>
+          </label>
           <div className={styles.inputField}>
             <FaUser className={styles.inputIcon} />
             <input
@@ -62,7 +79,9 @@ const Signup = () => {
         </div>
 
         <div className={styles.inputGroup}>
-          <label>Password <span>*</span></label>
+          <label>
+            Password <span>*</span>
+          </label>
           <div className={styles.inputField}>
             <FaLock className={styles.inputIcon} />
             <input
@@ -79,7 +98,9 @@ const Signup = () => {
         {/* <div className={styles.forgotPassword}>
           <Link to="/forgot-password">Lost your password?</Link>
         </div> */}
-        <button className={styles.loginBtn} onClick={handleLogin}>Login</button>
+        <button className={styles.loginBtn} onClick={handleLogin}>
+          Login
+        </button>
 
         <ToastContainer />
       </div>

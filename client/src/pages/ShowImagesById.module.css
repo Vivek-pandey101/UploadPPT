@@ -30,8 +30,12 @@ h2 {
 
 .fullScreenBtn{
   position: absolute;
-  top: 94%;
-  left: 15px;
+  top: 20px;
+  right: 20px;
+}
+
+.fullScreenBtn svg{
+  color: red;
 }
 
 .fullScreenNav {

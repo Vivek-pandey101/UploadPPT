@@ -74,7 +74,7 @@ const AdminPage = () => {
     const getUserList = async () => {
       try {
         const response = await fetch(
-          "https://uploadppt.onrender.com/register/getAllUsers"
+          "http://localhost:3000/register/getAllUsers"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch users");

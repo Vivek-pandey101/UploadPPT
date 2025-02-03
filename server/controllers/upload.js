@@ -50,7 +50,6 @@ const uploadToAws = (req, res) => {
 
     const urls = req.files.map((file) => ({
       link: file.location,
-      is
     }));
     const name = req.body.name; // Get the name field from the frontend
 

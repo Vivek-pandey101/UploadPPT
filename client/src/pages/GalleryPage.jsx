@@ -12,11 +12,6 @@ const GalleryPage = ({ images }) => {
     setShow(true);
   };
 
-  const handleAssignTommorrowsTask = (fileId) => {
-    setSelectedFileIdTwo(fileId);
-    setShow(true);
-  };
-
   return (
     <>
       <div className={styles.galleryTableWrapper}>
@@ -39,12 +34,6 @@ const GalleryPage = ({ images }) => {
                   >
                     Assign today's task
                   </button>
-                  <button
-                    className={styles.assignTomorrowButton}
-                    onClick={() => handleAssignTommorrowsTask(item._id)}
-                  >
-                    Assign tomorrow's task
-                  </button>
                 </td>
               </tr>
             ))}
@@ -56,7 +45,6 @@ const GalleryPage = ({ images }) => {
           setShow={setShow}
           show={show}
           selectedFileId={selectedFileId}
-          selectedFileIdTwo={selectedFileIdTwo}
         />
       )}
     </>

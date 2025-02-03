@@ -13,7 +13,7 @@ export const uploadImages = createAsyncThunk(
 
     try {
       const response = await axios.post(
-        "https://uploadppt.onrender.com/upload",
+        "http://localhost:3000/upload",
         formData
       );
       if (response.status === 200) {
@@ -31,7 +31,7 @@ export const fetchImages = createAsyncThunk(
   "images/fetchImages",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://uploadppt.onrender.com/fetchall");
+      const response = await axios.get("http://localhost:3000/fetchall");
       if (response.status === 200) {
         return response.data.images; // Assuming the response contains an array of images
       }
@@ -46,7 +46,7 @@ export const fetchImagesById = createAsyncThunk(
   "images/fetchImagesById", // Use unique action type
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`https://uploadppt.onrender.com/fetchall/${id}`);
+      const response = await axios.get(`http://localhost:3000/fetchall/${id}`);
       if (response.status === 200) {
         return response.data.image; // Assuming `image` contains the fetched image
       }

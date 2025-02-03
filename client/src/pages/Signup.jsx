@@ -47,7 +47,7 @@ const Signup = ({ handleShowRegisterForm }) => {
       return;
     }
     try {
-      const url = "https://uploadppt.onrender.com/register/signup";
+      const url = "http://localhost:3000/register/signup";
       const response = await fetch(url, {
         method: "POST",
         headers: {

@@ -14,13 +14,17 @@ const ShowImagesById = () => {
   const [showFullScreen, setShowFullScreen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
+  const [localUrls, setLocalUrls] = useState([]);
 
   const dispatch = useDispatch();
   const fetchId = localStorage.getItem("id");
   const userEmail = JSON.parse(localStorage.getItem("userCred"));
 
   // Ensure `url` is always an array
-  const urlArray = Array.isArray(url) ? url : url ? [url] : [];
+  useEffect(() => {
+    const urlArray = Array.isArray(url) ? url : url ? [url] : [];
+    setLocalUrls(urlArray);
+  }, [url]);
 
   useEffect(() => {
     if (fetchId) {
@@ -28,20 +32,30 @@ const ShowImagesById = () => {
     }
   }, [fetchId, dispatch]);
 
-  const handleToUpdate = (urlLink, email) => {
+  const handleToUpdate = async (urlLink, email) => {
     const imageIds = imageArr.map((image) => image._id);
-    if (!imageIds) {
-      console.error("No matching _id found for this URL:", urlLink);
-      return;
-    }
-    dispatch(
-      updateBoolean({ id: imageIds, urlLink, isCheckedForEmail: email })
-    );
+    const updatedUrls = localUrls.map((item) => {
+      if (item.link === urlLink) {
+        const isChecked = item.isChecked.includes(email)
+          ? item.isChecked.filter((e) => e !== email)
+          : [...item.isChecked, email];
+        return { ...item, isChecked };
+      }
+      return item;
+    });
+    setLocalUrls(updatedUrls);
 
-    setTimeout(() => {
+    try {
+      await dispatch(
+        updateBoolean({ id: imageIds, urlLink, isCheckedForEmail: email })
+      );
+      // Refresh data after update
       dispatch(fetchImagesById(fetchId));
-      setShow(false);
-    }, 500);
+    } catch (err) {
+      console.error("Update failed, rolling back", err);
+      setLocalUrls(url); // Rollback on error
+    }
+    setShow(false);
   };
 
   const toggleFullScreen = () => {
@@ -58,7 +72,7 @@ const ShowImagesById = () => {
   };
 
   const handleNext = () => {
-    if (currentPage < urlArray.length) {
+    if (currentPage < localUrls.length) {
       setCurrentPage((prev) => prev + 1);
     }
   };
@@ -78,25 +92,23 @@ const ShowImagesById = () => {
       <h2>{name}</h2>
       <div className={styles.ImagesWrapper}>
         <div id="present" className={styles.ImageCont}>
-          {urlArray.length > 0 && (
+          {localUrls.length > 0 && (
             <img
-              src={urlArray[currentPage - 1].link}
+              src={localUrls[currentPage - 1].link}
               alt={`Image ${currentPage}`}
             />
           )}
-          {!show && (
             <input
               type="checkbox"
-              checked={urlArray[currentPage - 1]?.isChecked?.includes(
+              checked={localUrls[currentPage - 1]?.isChecked?.includes(
                 userEmail.email
               )}
               onChange={() =>
-                handleToUpdate(urlArray[currentPage - 1].link, userEmail.email)
+                handleToUpdate(localUrls[currentPage - 1].link, userEmail.email)
               }
             />
-          )}
           <button className={styles.fullScreenBtn} onClick={toggleFullScreen}>
-            {show ? <MdFullscreenExit /> : <BsFullscreen />}
+            {show ? <MdFullscreenExit size={30}/> : <BsFullscreen/>}
           </button>
           {showFullScreen ? (
             <div className={styles.fullScreenNav}>
@@ -105,7 +117,7 @@ const ShowImagesById = () => {
               </button>
               <button
                 onClick={handleNext}
-                disabled={currentPage === urlArray.length}
+                disabled={currentPage === localUrls.length}
               >
                 <BsChevronRight />
               </button>
@@ -114,7 +126,7 @@ const ShowImagesById = () => {
         </div>
 
         <div className={styles.imageButtons}>
-          {urlArray.map((_, index) => (
+          {localUrls.map((_, index) => (
             <div key={index}>
               <button
                 className={currentPage === index + 1 ? styles.activeBtn : ""}
@@ -135,7 +147,7 @@ const ShowImagesById = () => {
           </button>
           <button
             onClick={handleNext}
-            disabled={currentPage === urlArray.length}
+            disabled={currentPage === localUrls.length}
           >
             <BsChevronRight />
           </button>
