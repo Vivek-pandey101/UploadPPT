@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import TeachingProgress from "./pages/TeachingProgress"
 
 const App = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const App = () => {
       {/* {!userDetails.isAdmin ? <Home /> : <AdminPage />} */}
       <Route path="/" element={<Home />} />
       <Route path="/images/:byId" element={<ShowImagesById />} />
+      <Route path="/teaching-progress" element={<TeachingProgress/>} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   );

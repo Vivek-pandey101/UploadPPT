@@ -32,25 +32,43 @@ const ShowImagesById = () => {
     }
   }, [fetchId, dispatch]);
 
-  const handleToUpdate = async (urlLink, email) => {
-    const imageIds = imageArr.map((image) => image._id);
+  const handleToUpdate = async (urlLink, email, index, docName) => {
+    const istTime = new Date().toISOString();
+    const timestamp = new Date(istTime).toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+    const userName = userEmail?.name;
     const updatedUrls = localUrls.map((item) => {
       if (item.link === urlLink) {
         const isChecked = item.isChecked.includes(email)
           ? item.isChecked.filter((e) => e !== email)
           : [...item.isChecked, email];
-        return { ...item, isChecked };
+        return {
+          ...item,
+          isChecked,
+          actionTimestamp: timestamp,
+          clickedIndex: index + 1,
+          userName,
+          userEmail: email,
+          docName,
+        };
       }
       return item;
     });
     setLocalUrls(updatedUrls);
 
     try {
-      await dispatch(
-        updateBoolean({ id: imageIds, urlLink, isCheckedForEmail: email })
+      dispatch(
+        updateBoolean({
+          id: fetchId,
+          urlLink,
+          isCheckedForEmail: email,
+          actionTimestamp: timestamp,
+          clickedIndex: index + 1,
+          userName,
+          docName,
+        })
       );
-      // Refresh data after update
-      dispatch(fetchImagesById(fetchId));
     } catch (err) {
       console.error("Update failed, rolling back", err);
       setLocalUrls(url); // Rollback on error
@@ -98,17 +116,22 @@ const ShowImagesById = () => {
               alt={`Image ${currentPage}`}
             />
           )}
-            <input
-              type="checkbox"
-              checked={localUrls[currentPage - 1]?.isChecked?.includes(
-                userEmail.email
-              )}
-              onChange={() =>
-                handleToUpdate(localUrls[currentPage - 1].link, userEmail.email)
-              }
-            />
+          <input
+            type="checkbox"
+            checked={localUrls[currentPage - 1]?.isChecked?.includes(
+              userEmail.email
+            )}
+            onChange={() =>
+              handleToUpdate(
+                localUrls[currentPage - 1].link,
+                userEmail.email,
+                currentPage - 1,
+                name
+              )
+            }
+          />
           <button className={styles.fullScreenBtn} onClick={toggleFullScreen}>
-            {show ? <MdFullscreenExit size={30}/> : <BsFullscreen/>}
+            {show ? <MdFullscreenExit size={30} /> : <BsFullscreen />}
           </button>
           {showFullScreen ? (
             <div className={styles.fullScreenNav}>

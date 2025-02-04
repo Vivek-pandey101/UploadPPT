@@ -77,12 +77,22 @@ h1 {
     gap: 30px;
 }
 
-.logoutButton button{
+.logoutButton button {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s;
     padding: 10px 20px;
-    background-color: #f44336;
+    background-color: red;
     border-radius: 5px;
+}
+
+.teachinProgress {
+    background: red;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 6px;
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
 }
 
 @media (max-width: 700px) {

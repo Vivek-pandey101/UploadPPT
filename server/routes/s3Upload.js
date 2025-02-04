@@ -5,6 +5,7 @@ const {
   fetchImageById,
   updateBoolean,
   addEnabledUsers,
+  deleteDocument,
 } = require("../controllers/upload");
 
 // Router setup
@@ -14,5 +15,6 @@ router.post("/upload", uploadToAws);
 router.get("/fetchall", fetchImages);
 router.get("/fetchall/:id", fetchImageById);
 router.put("/files/:fileId/enableUser", addEnabledUsers);
+router.delete("/delete/:id", deleteDocument);
 
 module.exports = router;

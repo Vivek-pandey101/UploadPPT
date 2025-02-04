@@ -1,15 +1,35 @@
 import React, { useState } from "react";
 import styles from "./GalleryPage.module.css";
 import TeachersList from "./TeachersList";
+import { FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
 
 const GalleryPage = ({ images }) => {
   const [show, setShow] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
-  const [selectedFileIdTwo, setSelectedFileIdTwo] = useState(null);
 
   const handleAssignTodaysTask = (fileId) => {
     setSelectedFileId(fileId);
     setShow(true);
+  };
+
+  const deleteDocument = async (id) => {
+    const isConfirmed = window.confirm("Are you sure want to delete?");
+    if (isConfirmed) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3000/delete/${id}`
+        );
+        console.log("Document deleted successfully:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error(
+          "Error deleting document:",
+          error.response?.data || error.message
+        );
+        return { success: false, error: error.message };
+      }
+    }
   };
 
   return (
@@ -33,6 +53,12 @@ const GalleryPage = ({ images }) => {
                     onClick={() => handleAssignTodaysTask(item._id)}
                   >
                     Assign today's task
+                  </button>
+                  <button
+                    className={styles.deleteBTN}
+                    onClick={() => deleteDocument(item._id)}
+                  >
+                    <FaTrashAlt size={25} />
                   </button>
                 </td>
               </tr>

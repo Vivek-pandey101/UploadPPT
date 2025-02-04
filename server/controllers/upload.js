@@ -133,44 +133,81 @@ const fetchImageById = async (req, res) => {
 };
 
 const updateBoolean = async (req, res) => {
-  const { id, urlLink, isCheckedForEmail } = req.body;
+  const {
+    id,
+    urlLink,
+    isCheckedForEmail,
+    actionTimestamp,
+    clickedIndex,
+    userName,
+    docName,
+  } = req.body;
 
   try {
     const fileDoc = await File.findById(id);
-
     if (!fileDoc) {
       return res.status(404).json({ message: "Document not found" });
     }
 
     const urlIndex = fileDoc.url.findIndex((u) => u.link === urlLink);
-
     if (urlIndex === -1) {
       return res.status(404).json({ message: "URL not found in the document" });
     }
 
-    // Initialize isChecked array if it doesn't exist
+    // Ensure arrays exist
     if (!Array.isArray(fileDoc.url[urlIndex].isChecked)) {
       fileDoc.url[urlIndex].isChecked = [];
     }
+    if (!Array.isArray(fileDoc.timeStamp)) {
+      fileDoc.timeStamp = [];
+    }
 
-    // console.log("isCheckedForEmail : ", isCheckedForEmail);
+    const isCheckedArray = fileDoc.url[urlIndex].isChecked;
+    const timeStampArray = fileDoc.timeStamp;
 
-    if (!fileDoc.url[urlIndex].isChecked.includes(isCheckedForEmail)) {
-      fileDoc.url[urlIndex].isChecked.push(isCheckedForEmail);
-    }else{
-      fileDoc.url[urlIndex].isChecked.pop(isCheckedForEmail);
+    // Find existing indices
+    const isCheckedIndex = isCheckedArray.indexOf(isCheckedForEmail);
+    const timeStampIndex = timeStampArray.findIndex(
+      (entry) => entry.email === isCheckedForEmail && entry.docName === docName
+    );
+
+    if (isCheckedIndex === -1) {
+      // If not checked before, add email to isChecked
+      isCheckedArray.push(isCheckedForEmail);
+
+      // Add or overwrite timeStamp entry
+      const newTimeStamp = {
+        email: isCheckedForEmail,
+        userName,
+        clickedIndex,
+        actionTimestamp,
+        docName,
+      };
+
+      if (timeStampIndex === -1) {
+        timeStampArray.push(newTimeStamp);
+      } else {
+        timeStampArray[timeStampIndex] = newTimeStamp;
+      }
+    } else {
+      // If already checked, remove from both isChecked and timeStamp
+      isCheckedArray.splice(isCheckedIndex, 1);
+      if (timeStampIndex !== -1) {
+        timeStampArray.splice(timeStampIndex, 1);
+      }
     }
 
     fileDoc.markModified("url");
+    fileDoc.markModified("timeStamp");
     await fileDoc.save();
 
     res.status(200).json({ success: true, document: fileDoc });
-    // console.log(fileDoc);
   } catch (err) {
     console.error("Error updating boolean value:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
 
 
 // Example route in your backend (e.g., in Express)
@@ -205,4 +242,29 @@ const addEnabledUsers = async (req, res) => {
   }
 };
 
-module.exports = { uploadToAws, fetchImages, fetchImageById, updateBoolean, addEnabledUsers };
+const deleteDocument = async (req, res) => {
+  try {
+    const { id } = req.params; // Get document ID from request params
+
+    // Find and delete the document
+    const deletedFile = await File.findByIdAndDelete(id);
+
+    if (!deletedFile) {
+      return res.status(404).json({ success: false, message: "Document not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Document deleted successfully", deletedFile });
+  } catch (error) {
+    console.error("Error deleting document:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+module.exports = {
+  uploadToAws,
+  fetchImages,
+  fetchImageById,
+  updateBoolean,
+  addEnabledUsers,
+  deleteDocument
+};

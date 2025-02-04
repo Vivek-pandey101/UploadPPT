@@ -141,8 +141,13 @@ const AdminPage = () => {
           </button>
         </form>
         <GalleryPage images={imageArr} />
+        <div className={styles.teachinProgress}>
+          <Link to={"/teaching-progress"}>Teaching Progress</Link>
+        </div>
       </div>
-      {showRegisterForm && <Signup handleShowRegisterForm={handleShowRegisterForm} />}
+      {showRegisterForm && (
+        <Signup handleShowRegisterForm={handleShowRegisterForm} />
+      )}
     </>
   );
 };

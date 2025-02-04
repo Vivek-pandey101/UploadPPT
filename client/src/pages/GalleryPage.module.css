@@ -60,6 +60,10 @@
     background-color: #218838;
 }
 
+.deleteBTN{
+    color: red;
+}
+
 @media (max-width: 770px) {
     .actionsCell{
         flex-direction: column;

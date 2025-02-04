@@ -57,26 +57,48 @@ export const fetchImagesById = createAsyncThunk(
   }
 );
 
-export const updateBoolean = ({ id, urlLink, isCheckedForEmail }) => async (dispatch) => {
-  try {
-    const response = await fetch(`http://localhost:3000/${id}/updateBoolean`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id, urlLink, isCheckedForEmail }),
-    });
+export const updateBoolean =
+  ({
+    id,
+    urlLink,
+    isCheckedForEmail,
+    actionTimestamp,
+    clickedIndex,
+    userName,
+    docName
+  }) =>
+  async (dispatch) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/${id}/updateBoolean`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            urlLink,
+            isCheckedForEmail,
+            actionTimestamp,
+            clickedIndex,
+            userName,
+            docName
+          }),
+        }
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      dispatch({ type: "UPDATE_BOOLEAN_SUCCESS", payload: data.document });
+      // console.log({ id, urlLink, isCheckedForEmail })
+
+      if (data.success) {
+        dispatch({ type: "UPDATE_BOOLEAN_SUCCESS", payload: data.document });
+      }
+    } catch (error) {
+      console.error("Error updating boolean value:", error);
     }
-  } catch (error) {
-    console.error("Error updating boolean value:", error);
-  }
-};
-
+  };
 
 const initialState = {
   imageArr: [],
