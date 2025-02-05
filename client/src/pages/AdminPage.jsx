@@ -6,16 +6,15 @@ import styles from "./AdminPage.module.css";
 import GalleryPage from "./GalleryPage";
 import Loader from "../component/Loader";
 import Signup from "./Signup";
+import JSZip from "jszip";
 import axios from "axios";
 
 const AdminPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showRegisterForm, setShowRegisterForm] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const [name, setName] = useState("");
   const [pptFile, setPptFile] = useState(null);
-  const [password, setPassword] = useState("");
   const [isConverting, setIsConverting] = useState(false);
 
   const { imageArr, isLoading } = useSelector((state) => state.images);
@@ -31,54 +30,16 @@ const AdminPage = () => {
     setShowRegisterForm(!showRegisterForm);
   };
 
-  const onNameChange = (e) => {
-    setName(e.target.value); // Update the name field
-  };
-
-  const onImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setSelectedFiles(files); // Set selected files
-  };
-
-  const handleSubmit = async () => {
-    if (!name.trim()) {
-      alert("Please enter a name for the files.");
-      return;
-    }
-    if (selectedFiles.length === 0) {
-      alert("Please select images.");
-      return;
-    }
-    if (selectedFiles.length > 10) {
-      alert("You can upload a maximum of 10 files at once.");
-      return;
-    }
-    const validTypes = ["image/jpeg", "image/png", "image/gif"];
-    for (const file of selectedFiles) {
-      if (!validTypes.includes(file.type)) {
-        alert("Invalid file type. Only JPEG, PNG, and GIF files are allowed.");
-        return;
-      }
-    }
-
-    // Dispatch uploadImages action
-    dispatch(uploadImages({ name, selectedFiles }));
-    setSelectedFiles([]); // Clear selected files
-    setName(""); // Clear the name field
-  };
-
   const handleLogout = async () => {
     try {
-      // Call the backend logout endpoint
       const response = await fetch("http://localhost:3000/register/logout", {
         method: "POST",
-        credentials: "include", // Include cookies for session-based logout
+        credentials: "include",
       });
 
       if (response.ok) {
-        // Clear local storage
         localStorage.removeItem("userCred");
-        navigate("/login"); // Redirect to the login page
+        navigate("/login");
       } else {
         console.error("Failed to logout");
       }
@@ -99,63 +60,40 @@ const AdminPage = () => {
 
     setIsConverting(true);
     const formData = new FormData();
-    formData.append("File", pptFile);
-    formData.append("Timeout", "900");
-    formData.append("StoreFile", "false");
-    formData.append("FileName", pptFile.name);
-    formData.append("Password", password);
-    formData.append("PageRange", "1-2000");
-    formData.append("ConvertHiddenSlides", "false");
-    formData.append("JpgType", "jpeg");
-    formData.append("ImageQuality", "75");
-    formData.append("ImageResolutionH", "200");
-    formData.append("ImageResolutionV", "200");
-    formData.append("ScaleImage", "false");
-    formData.append("ScaleProportions", "true");
-    formData.append("ScaleIfLarger", "false");
-    formData.append("TextAntialiasing", "1");
-    formData.append("GraphicsAntialiasing", "1");
-    formData.append("ImageInterpolation", "false");
-    formData.append("UseCIEColor", "false");
+    formData.append("documents", pptFile, pptFile.name);
 
     try {
       const response = await axios.post(
-        "https://v2.convertapi.com/convert/ppt/to/jpg?Secret=secret_MNYdGimnEi3Rri4r",
+        "https://api.slidize.cloud/v1.0/slides/convert/png",
         formData,
         {
-          headers: {
-            Accept: "application/json",
-          },
+          responseType: "blob",
         }
       );
 
+      const zip = await JSZip.loadAsync(response.data);
       const convertedFiles = await Promise.all(
-        response.data.Files.map(async (file, index) => {
-          const blob = base64ToBlob(file.FileData, "image/jpeg");
-          return new File([blob], `${name}_page_${index + 1}.jpg`, {
-            type: "image/jpeg",
-          });
+        Object.values(zip.files).map(async (file, index) => {
+          if (!file.dir && /\.(png|jpe?g)$/i.test(file.name)) {
+            const imageBlob = await file.async("blob");
+            return new File([imageBlob], `${name}_page_${index + 1}.png`, {
+              type: "image/png",
+            });
+          }
+          return null;
         })
       );
 
-      dispatch(uploadImages({ name, selectedFiles: convertedFiles }));
+      dispatch(
+        uploadImages({ name, selectedFiles: convertedFiles.filter(Boolean) })
+      );
       setPptFile(null);
-      setPassword("");
     } catch (error) {
       console.error("Conversion error:", error);
       alert("Error converting PPT file. Please try again.");
     } finally {
       setIsConverting(false);
     }
-  };
-
-  const base64ToBlob = (base64, mimeType) => {
-    const byteCharacters = atob(base64);
-    const byteArrays = new Uint8Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteArrays[i] = byteCharacters.charCodeAt(i);
-    }
-    return new Blob([byteArrays], { type: mimeType });
   };
 
   if (isLoading) {
@@ -174,7 +112,6 @@ const AdminPage = () => {
           </div>
         </div>
 
-        {/* Existing Image Upload Form */}
         <div className={styles.form}>
           <input
             type="text"

@@ -6,6 +6,7 @@ const {
   updateBoolean,
   addEnabledUsers,
   deleteDocument,
+  trackTimeSpent,
 } = require("../controllers/upload");
 
 // Router setup
@@ -16,5 +17,6 @@ router.get("/fetchall", fetchImages);
 router.get("/fetchall/:id", fetchImageById);
 router.put("/files/:fileId/enableUser", addEnabledUsers);
 router.delete("/delete/:id", deleteDocument);
+router.post('/track-time', trackTimeSpent);
 
 module.exports = router;

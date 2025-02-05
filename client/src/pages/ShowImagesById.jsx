@@ -101,6 +101,46 @@ const ShowImagesById = () => {
     }
   };
 
+  // Add this useEffect hook in ShowImagesById component
+  useEffect(() => {
+    const startTime = new Date();
+
+    return () => {
+      const endTime = new Date();
+      const duration = endTime - startTime;
+      trackTimeSpent(currentPage, duration);
+    };
+  }, [currentPage, showFullScreen]);
+
+  const trackTimeSpent = (slideIndex, duration) => {
+    const userEmail = JSON.parse(localStorage.getItem("userCred"))?.email;
+    const documentId = localStorage.getItem("id");
+
+    if (!userEmail || !documentId) return;
+
+    // Use Beacon API if available for better reliability on page unload
+    const data = {
+      userId: userEmail,
+      documentId,
+      slideIndex,
+      duration,
+    };
+
+    if (navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(data)], {
+        type: "application/json",
+      });
+      navigator.sendBeacon("http://localhost:3000/track-time", blob);
+    } else {
+      fetch("/api/track-time", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }).catch((err) => console.error("Error tracking time:", err));
+    }
+    console.log(slideIndex, currentPage)
+  };
+
   if (isLoading) {
     return <Loader />;
   }

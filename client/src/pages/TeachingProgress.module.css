@@ -1,10 +1,13 @@
-.container {
+.container, .NoDatacontainer {
     width: 100vw;
-    max-width: 1200px;
     margin: auto;
     padding: 20px;
     height: 100vh;
     background: #fff;
+}
+
+.NoDatacontainer{
+    text-align: center;
 }
 
 .back {
@@ -13,6 +16,7 @@
     top: 20px;
     color: white;
     border-radius: 6px;
+    left: 20px;
 }
 
 .back a {

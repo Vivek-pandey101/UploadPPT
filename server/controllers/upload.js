@@ -208,7 +208,27 @@ const updateBoolean = async (req, res) => {
   }
 };
 
+const trackTimeSpent = async (req, res) => {
+  const { userId, documentId, slideIndex, duration } = req.body;
 
+  try {
+    const fileDoc = await File.findById(documentId);
+    if (!fileDoc)
+      return res.status(404).json({ message: "Document not found" });
+
+    fileDoc.timeSpent.push({
+      email: userId,
+      slideIndex,
+      duration,
+    });
+
+    await fileDoc.save();
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("Error tracking time:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
 
 // Example route in your backend (e.g., in Express)
 const addEnabledUsers = async (req, res) => {
@@ -250,10 +270,18 @@ const deleteDocument = async (req, res) => {
     const deletedFile = await File.findByIdAndDelete(id);
 
     if (!deletedFile) {
-      return res.status(404).json({ success: false, message: "Document not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Document not found" });
     }
 
-    res.status(200).json({ success: true, message: "Document deleted successfully", deletedFile });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Document deleted successfully",
+        deletedFile,
+      });
   } catch (error) {
     console.error("Error deleting document:", error);
     res.status(500).json({ success: false, error: "Internal Server Error" });
@@ -266,5 +294,6 @@ module.exports = {
   fetchImageById,
   updateBoolean,
   addEnabledUsers,
-  deleteDocument
+  deleteDocument,
+  trackTimeSpent
 };

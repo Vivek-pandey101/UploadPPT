@@ -14,6 +14,14 @@ const fileSchema = new mongoose.Schema(
       },
     ],
     enabledUser: [{ type: String }],
+    timeSpent: [
+      {
+        email: String,
+        slideIndex: Number,
+        duration: Number, // milliseconds
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,
