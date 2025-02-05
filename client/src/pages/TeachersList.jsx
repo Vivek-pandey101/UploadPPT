@@ -71,7 +71,6 @@ const TeachersList = ({ setShow, show, selectedFileId }) => {
       onClick={() => setShow(!show)}
     >
       <div className={styles.ContainerTwo} onClick={(e) => e.stopPropagation()}>
-        <h3>Teachers List</h3>
         <div className={styles.tableContainer}>
           <table className={styles.userTable}>
             <thead>

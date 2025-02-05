@@ -1,32 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadImages, fetchImages } from "../redux/action";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { uploadImages } from "../redux/action";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./AdminPage.module.css";
 import GalleryPage from "./GalleryPage";
 import Loader from "../component/Loader";
 import Signup from "./Signup";
+import axios from "axios";
 
 const AdminPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
   const [showRegisterForm, setShowRegisterForm] = useState(false);
-
-  const handleShowRegisterForm = () => {
-    setShowRegisterForm(!showRegisterForm);
-  };
-
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [name, setName] = useState("");
+  const [pptFile, setPptFile] = useState(null);
+  const [password, setPassword] = useState("");
+  const [isConverting, setIsConverting] = useState(false);
 
   const { imageArr, isLoading } = useSelector((state) => state.images);
   const userDetails = JSON.parse(localStorage.getItem("userCred")) || {};
 
   useEffect(() => {
     if (!userDetails) {
-      navigate("login");
+      navigate("/login");
     }
-  }, []);
+  }, [navigate, userDetails]);
+
+  const handleShowRegisterForm = () => {
+    setShowRegisterForm(!showRegisterForm);
+  };
 
   const onNameChange = (e) => {
     setName(e.target.value); // Update the name field
@@ -37,24 +40,19 @@ const AdminPage = () => {
     setSelectedFiles(files); // Set selected files
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!name.trim()) {
       alert("Please enter a name for the files.");
       return;
     }
-
     if (selectedFiles.length === 0) {
       alert("Please select images.");
       return;
     }
-
     if (selectedFiles.length > 10) {
       alert("You can upload a maximum of 10 files at once.");
       return;
     }
-
     const validTypes = ["image/jpeg", "image/png", "image/gif"];
     for (const file of selectedFiles) {
       if (!validTypes.includes(file.type)) {
@@ -65,27 +63,9 @@ const AdminPage = () => {
 
     // Dispatch uploadImages action
     dispatch(uploadImages({ name, selectedFiles }));
-    dispatch(fetchImages()); // Fetch the updated image list after upload
     setSelectedFiles([]); // Clear selected files
     setName(""); // Clear the name field
   };
-
-  useEffect(() => {
-    const getUserList = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:3000/register/getAllUsers"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Failed to fetch users. Please try again later.");
-      }
-    };
-    getUserList();
-  }, [navigate]); // Dependency array includes navigate
 
   const handleLogout = async () => {
     try {
@@ -107,6 +87,77 @@ const AdminPage = () => {
     }
   };
 
+  const handleConvertAndUpload = async () => {
+    if (!name.trim()) {
+      alert("Please enter a name for the files.");
+      return;
+    }
+    if (!pptFile) {
+      alert("Please select a PPT file.");
+      return;
+    }
+
+    setIsConverting(true);
+    const formData = new FormData();
+    formData.append("File", pptFile);
+    formData.append("Timeout", "900");
+    formData.append("StoreFile", "false");
+    formData.append("FileName", pptFile.name);
+    formData.append("Password", password);
+    formData.append("PageRange", "1-2000");
+    formData.append("ConvertHiddenSlides", "false");
+    formData.append("JpgType", "jpeg");
+    formData.append("ImageQuality", "75");
+    formData.append("ImageResolutionH", "200");
+    formData.append("ImageResolutionV", "200");
+    formData.append("ScaleImage", "false");
+    formData.append("ScaleProportions", "true");
+    formData.append("ScaleIfLarger", "false");
+    formData.append("TextAntialiasing", "1");
+    formData.append("GraphicsAntialiasing", "1");
+    formData.append("ImageInterpolation", "false");
+    formData.append("UseCIEColor", "false");
+
+    try {
+      const response = await axios.post(
+        "https://v2.convertapi.com/convert/ppt/to/jpg?Secret=secret_MNYdGimnEi3Rri4r",
+        formData,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const convertedFiles = await Promise.all(
+        response.data.Files.map(async (file, index) => {
+          const blob = base64ToBlob(file.FileData, "image/jpeg");
+          return new File([blob], `${name}_page_${index + 1}.jpg`, {
+            type: "image/jpeg",
+          });
+        })
+      );
+
+      dispatch(uploadImages({ name, selectedFiles: convertedFiles }));
+      setPptFile(null);
+      setPassword("");
+    } catch (error) {
+      console.error("Conversion error:", error);
+      alert("Error converting PPT file. Please try again.");
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
+  const base64ToBlob = (base64, mimeType) => {
+    const byteCharacters = atob(base64);
+    const byteArrays = new Uint8Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArrays[i] = byteCharacters.charCodeAt(i);
+    }
+    return new Blob([byteArrays], { type: mimeType });
+  };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -119,31 +170,35 @@ const AdminPage = () => {
           <div className={styles.logoutButton}>
             <button onClick={handleLogout}>Logout</button>
             <button onClick={handleShowRegisterForm}>Register a user</button>
+            <Link to={"/teaching-progress"}>Teaching Progress</Link>
           </div>
         </div>
-        <form method="post" onSubmit={handleSubmit} className={styles.form}>
+
+        {/* Existing Image Upload Form */}
+        <div className={styles.form}>
           <input
             type="text"
             placeholder="Enter file name"
             value={name}
-            onChange={onNameChange}
+            onChange={(e) => setName(e.target.value)}
             className={styles.input}
           />
           <input
             type="file"
-            onChange={onImageChange}
-            accept="image/*"
-            multiple
+            accept=".ppt,.pptx"
+            onChange={(e) => setPptFile(e.target.files[0])}
             className={styles.input}
           />
-          <button type="submit" className={styles.button} disabled={isLoading}>
-            {isLoading ? <div className={styles.spinner}></div> : "Upload"}
+          <button
+            className={styles.button}
+            onClick={handleConvertAndUpload}
+            disabled={isConverting || isLoading}
+          >
+            {isConverting ? "Converting..." : "Convert & Upload PPT"}
           </button>
-        </form>
-        <GalleryPage images={imageArr} />
-        <div className={styles.teachinProgress}>
-          <Link to={"/teaching-progress"}>Teaching Progress</Link>
         </div>
+
+        <GalleryPage images={imageArr} />
       </div>
       {showRegisterForm && (
         <Signup handleShowRegisterForm={handleShowRegisterForm} />

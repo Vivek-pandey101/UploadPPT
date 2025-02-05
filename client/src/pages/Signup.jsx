@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import styles from "./Signup.module.css";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { handleError } from "../component/utils";
 import { toast, ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
+import { registerUser } from "../redux/loginAction";
 
 const Signup = ({ handleShowRegisterForm }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
   const handleShow = () => {
@@ -47,23 +49,17 @@ const Signup = ({ handleShowRegisterForm }) => {
       return;
     }
     try {
-      const url = "http://localhost:3000/register/signup";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-      if (response.status === 400) {
-        toast.error("Email already exists...");
-        return;
+      const resultAction = await dispatch(
+        registerUser({ name, email, password })
+      );
+
+      if (registerUser.fulfilled.match(resultAction)) {
+        toast.success("Registration successful!");
+      } else {
+        toast.error(resultAction.payload || "Registration failed!");
       }
-      const result = await response.json();
-      console.log(result);
-      navigate("/login");
-    } catch (error) {
-      handleError(error.message);
+    } catch (err) {
+      toast.error("Something went wrong. Please try again!");
     }
   };
 
@@ -143,9 +139,9 @@ const Signup = ({ handleShowRegisterForm }) => {
           </div>
         </div>
         <ToastContainer />
-      <button className={styles.close} onClick={handleShowRegisterForm}>
-        <ImCross />
-      </button>
+        <button className={styles.close} onClick={handleShowRegisterForm}>
+          <ImCross />
+        </button>
       </div>
     </div>
   );

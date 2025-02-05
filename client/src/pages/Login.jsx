@@ -1,47 +1,51 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { handleError } from "../component/utils";
-import { ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
 import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa";
 import styles from "./Login.module.css"; // Import CSS module
+import { loginUser } from "../redux/loginAction";
 
-const Signup = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
 
   const handleShow = () => setShow(!show);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
-      handleError("All fields are required...");
+      toast.error("All fields are required...");
       return;
     }
-    try {
-      const url = "http://localhost:3000/register/login";
-      const response = await fetch(url, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
 
-      if (response.ok) {
-        const result = await response.json();
-        const { email, name, isAdmin } = result;
+    try {
+      const resultAction = await dispatch(loginUser({ email, password }));
+
+      if (loginUser.fulfilled.match(resultAction)) {
+        toast.success("Login successful! Redirecting...");
+        const { email, name, isAdmin } = resultAction.payload;
+
+        // Store user details in local storage
         localStorage.setItem(
           "userCred",
           JSON.stringify({ email, name, isAdmin })
         );
-        navigate(isAdmin ? "/admin-page" : "/");
+
+        setTimeout(() => {
+          navigate(isAdmin ? "/admin-page" : "/");
+        }, 2000);
       } else {
-        handleError("Email or password is wrong");
+        toast.error(resultAction.payload || "Invalid email or password");
       }
     } catch (error) {
-      handleError(error.message);
+      toast.error("Something went wrong. Please try again!");
     }
   };
 
@@ -49,8 +53,8 @@ const Signup = () => {
     <div className={styles.signupContainer}>
       <div className={styles.aboutGyankosha}>
         <p>
-          <strong>Gyankosha</strong> – Transforming education with NEP-aligned excellence in
-          academics, skills, and growth.
+          <strong>Gyankosha</strong> – Transforming education with NEP-aligned
+          excellence in academics, skills, and growth.
         </p>
         <p>
           Empowering students with 21st-century skills, mental agility, and
@@ -95,12 +99,16 @@ const Signup = () => {
             </button>
           </div>
         </div>
-        {/* <div className={styles.forgotPassword}>
-          <Link to="/forgot-password">Lost your password?</Link>
-        </div> */}
-        <button className={styles.loginBtn} onClick={handleLogin}>
-          Login
+
+        <button
+          className={styles.loginBtn}
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
+
+        {error && <p className={styles.errorMessage}>{error}</p>}
 
         <ToastContainer />
       </div>
@@ -108,4 +116,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
